@@ -1,6 +1,6 @@
 define omd::config($site) {
    # Relationships
-   Class['omd::install'] -> Exec["omd-${site}-create"] -> Exec["omd-${site}-start"]	
+   Class['omd'] -> Exec["omd-${site}-create"] -> Exec["omd-${site}-start"]	
 
    exec { "omd-${site}-create":		
       command => "omd create $site",
