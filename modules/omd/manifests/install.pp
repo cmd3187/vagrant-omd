@@ -3,7 +3,7 @@ class omd::install {
    # Relationships
    #Package['wget'] -> Notify['dl_omd_start'] -> Exec['dl_omd'] -> Notify['dl_omd_end'] -> Package['omd']
    #Package['wget'] -> Exec['dl_omd'] -> Package['omd']
-   Class['epel'] -> Yumrepo['omdrepo'] -> Package['omd']
+   Class['omd::epel'] -> Yumrepo['omdrepo'] -> Package['omd']
 
    #package {'wget':
    #   ensure => installed,
