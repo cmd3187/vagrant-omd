@@ -1,9 +1,14 @@
-define omd::site($site = $title, $core = 'nagios') {
+# Class: omd::site
+# Description: Class to provision new sites and manage their configurations
+define omd::site($site = $title, 
+   $core = 'nagios',
+   $isMaster = "true",
+   $master = "",
+   $slaves = []) {
    # Relationships
-   Exec["omd-${site}-create"] -> Exec["omd-${site}-start"] -> File["omd-${site}.conf"]
-   File["omd-${site}.conf"] ~> Service["omd"]
+   Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}.conf"] -> Exec["omd-${site}-start"]
 
-   exec { "omd-${site}-create":		
+   exec { "omd-${site}-create":   
       command => "omd create $site",
       path => ['/bin', '/usr/bin', '/usr/local/bin'],
       timeout => 0,
@@ -17,7 +22,7 @@ define omd::site($site = $title, $core = 'nagios') {
       unless => "omd status ${site}"
    }
 
-   file { "omd-${site}.conf":
+   file { "${site}.conf":
       content => template("omd/site.conf.erb"),
       path => "/omd/sites/${site}/etc/omd/site.conf",
       owner => "${site}", 

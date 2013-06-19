@@ -21,17 +21,58 @@ Vagrant.configure("2") do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
+  config.vm.define :collector do |collector|
+    collector.vm.box = "centos-63-x64"
+    collector.vm.network :forwarded_port, guest: 80, host: 8080
+    collector.vm.network :private_network, ip: "192.168.56.100"
+    collector.vm.provider "virtualbox" do |v|
+      v.name = "collector.example.com"
+    end
+    collector.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.module_path = "modules"
+      puppet.manifest_file = "collector.pp"
+    end
+  end
+
+  config.vm.define :poller1 do |poller1|
+    poller1.vm.box = "centos-63-x64"
+    poller1.vm.network :forwarded_port, guest: 80, host: 8080
+    poller1.vm.network :private_network, ip: "192.168.56.101"
+    poller1.vm.provider "virtualbox" do |v|
+      v.name = "poller1.example.com"
+    end
+    poller1.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.module_path = "modules"
+      puppet.manifest_file = "poller1.pp"
+    end
+  end
+
+  config.vm.define :poller2 do |poller2|
+    poller2.vm.box = "centos-63-x64"
+    poller2.vm.network :forwarded_port, guest: 80, host: 8080
+    poller2.vm.network :private_network, ip: "192.168.56.102"
+    poller2.vm.provider "virtualbox" do |v|
+      v.name = "poller2.example.com"
+    end
+    poller2.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.module_path = "modules"
+      puppet.manifest_file = "poller2.pp"
+    end
+  end
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "centos-63-x64"
+  #config.vm.box = "centos-63-x64"
   #config.vm.provision :shell,
   #      :inline => $omd_install
-  config.vm.network :forwarded_port, guest: 80, host: 8080
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "manifests"
-    puppet.module_path = "modules"
-    puppet.manifest_file  = "init.pp"
-  end
+  #config.vm.network :forwarded_port, guest: 80, host: 8080
+  #config.vm.provision :puppet do |puppet|
+  #  puppet.manifests_path = "manifests"
+  #  puppet.module_path = "modules"
+  #  puppet.manifest_file  = "init.pp"
+  #end
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
