@@ -1,0 +1,50 @@
+# File managed by Puppet <%= puppetversion %> on <%= puppet_server %>
+
+LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11/ext/apache2/mod_passenger.so
+
+PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11
+PassengerRuby /usr/bin/ruby
+
+# you probably want to tune these settings
+PassengerHighPerformance on
+PassengerMaxPoolSize 12
+PassengerPoolIdleTime 1500
+# PassengerMaxRequests 1000
+PassengerStatThrottleRate 120
+RackAutoDetect On
+RailsAutoDetect On
+
+Listen <%= scope.lookupvar('puppet::server::service_listen_port') %>
+
+<VirtualHost *:8140>
+        SSLEngine on
+        SSLProtocol -ALL +SSLv3 +TLSv1
+        SSLCipherSuite ALL:!ADH:RC4+RSA:+HIGH:+MEDIUM:-LOW:-SSLv2:-EXP
+
+        SSLCertificateFile      <%= hostcert %>
+        SSLCertificateKeyFile   <%= hostprivkey %>
+        SSLCertificateChainFile <%= cacert %>
+        SSLCACertificateFile    <%= cacert %>
+        # If Apache complains about invalid signatures on the CRL, you can try disabling
+        # CRL checking by commenting the next line, but this is not recommended.
+        SSLCARevocationFile     <%= cacrl %>
+        SSLVerifyClient optional
+        SSLVerifyDepth  1
+        SSLOptions +StdEnvVars
+	
+	# The following client headers allow the same configuration to work with Pound.
+	RequestHeader set X-SSL-Subject %{SSL_CLIENT_S_DN}e
+	RequestHeader set X-Client-DN %{SSL_CLIENT_S_DN}e
+	RequestHeader set X-Client-Verify %{SSL_CLIENT_VERIFY}e
+
+	#/usr/share/puppet/ext/rack/puppetmasterd/public
+        DocumentRoot <%= puppetmasterd_documentroot %>
+        RackBaseURI /
+        <Directory <%= puppetmasterd_documentbase%> >
+                Options None
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+</VirtualHost>
+

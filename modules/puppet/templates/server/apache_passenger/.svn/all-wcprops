@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/server/apache_passenger
+END
+pupetmasterd.conf-tempate.erb
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/server/apache_passenger/pupetmasterd.conf-tempate.erb
+END
+puppet_config.ru-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/server/apache_passenger/puppet_config.ru-template.erb
+END

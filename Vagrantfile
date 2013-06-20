@@ -18,159 +18,63 @@ sudo -iu test omd start
 SCRIPT
 
 Vagrant.configure("2") do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
+
+  # Puppet Provisioner
+  config.vm.define :puppet do |puppet|
+    puppet.vm.box = "centos-63-x64"
+    puppet.vm.network :private_network, ip: "192.168.56.200"
+    puppet.vm.hostname = "puppet.example.com"
+    puppet.vm.provision :puppet do |pd|
+     pd.manifests_path = "manifests"
+     pd.module_path = "modules"
+     pd.manifest_file = "puppet.pp"
+    end
+  end
+
+  # Core Environment
   config.vm.define :collector do |collector|
     collector.vm.box = "centos-63-x64"
     collector.vm.network :forwarded_port, guest: 80, host: 8080
     collector.vm.network :private_network, ip: "192.168.56.100"
+    collector.vm.hostname = "collector.example.com"
     collector.vm.provider "virtualbox" do |v|
       v.name = "collector.example.com"
     end
     collector.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
       puppet.module_path = "modules"
-      puppet.manifest_file = "collector.pp"
+      puppet.manifest_file = "vagrant.pp"
     end
   end
 
   config.vm.define :poller1 do |poller1|
     poller1.vm.box = "centos-63-x64"
-    poller1.vm.network :forwarded_port, guest: 80, host: 8080
+    poller1.vm.network :forwarded_port, guest: 80, host: 2201
     poller1.vm.network :private_network, ip: "192.168.56.101"
+    poller1.vm.hostname = "poller1.example.com"
     poller1.vm.provider "virtualbox" do |v|
       v.name = "poller1.example.com"
     end
     poller1.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
       puppet.module_path = "modules"
-      puppet.manifest_file = "poller1.pp"
+      puppet.manifest_file = "vagrant.pp"
     end
   end
 
   config.vm.define :poller2 do |poller2|
     poller2.vm.box = "centos-63-x64"
-    poller2.vm.network :forwarded_port, guest: 80, host: 8080
+    poller2.vm.network :forwarded_port, guest: 80, host: 2203
     poller2.vm.network :private_network, ip: "192.168.56.102"
+    poller2.vm.hostname = "poller2.example.com"
     poller2.vm.provider "virtualbox" do |v|
       v.name = "poller2.example.com"
     end
     poller2.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
       puppet.module_path = "modules"
-      puppet.manifest_file = "poller2.pp"
+      puppet.manifest_file = "vagrant.pp"
     end
   end
 
-  # Every Vagrant virtual environment requires a box to build off of.
-  #config.vm.box = "centos-63-x64"
-  #config.vm.provision :shell,
-  #      :inline => $omd_install
-  #config.vm.network :forwarded_port, guest: 80, host: 8080
-  #config.vm.provision :puppet do |puppet|
-  #  puppet.manifests_path = "manifests"
-  #  puppet.module_path = "modules"
-  #  puppet.manifest_file  = "init.pp"
-  #end
-
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  # config.vm.box_url = "http://domain.com/path/to/above.box"
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network :forwarded_port, guest: 80, host: 8080
-
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network :private_network, ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network :public_network
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
-
-  # Enable provisioning with Puppet stand alone.  Puppet manifests
-  # are contained in a directory path relative to this Vagrantfile.
-  # You will need to create the manifests directory and a manifest in
-  # the file centos-63-x64.pp in the manifests_path directory.
-  #
-  # An example Puppet manifest to provision the message of the day:
-  #
-  # # group { "puppet":
-  # #   ensure => "present",
-  # # }
-  # #
-  # # File { owner => 0, group => 0, mode => 0644 }
-  # #
-  # # file { '/etc/motd':
-  # #   content => "Welcome to your Vagrant-built virtual machine!
-  # #               Managed by Puppet.\n"
-  # # }
-  #
-  # config.vm.provision :puppet do |puppet|
-  #   puppet.manifests_path = "manifests"
-  #   puppet.manifest_file  = "init.pp"
-  # end
-
-  # Enable provisioning with chef solo, specifying a cookbooks path, roles
-  # path, and data_bags path (all relative to this Vagrantfile), and adding
-  # some recipes and/or roles.
-  #
-  # config.vm.provision :chef_solo do |chef|
-  #   chef.cookbooks_path = "../my-recipes/cookbooks"
-  #   chef.roles_path = "../my-recipes/roles"
-  #   chef.data_bags_path = "../my-recipes/data_bags"
-  #   chef.add_recipe "mysql"
-  #   chef.add_role "web"
-  #
-  #   # You may also specify custom JSON attributes:
-  #   chef.json = { :mysql_password => "foo" }
-  # end
-
-  # Enable provisioning with chef server, specifying the chef server URL,
-  # and the path to the validation key (relative to this Vagrantfile).
-  #
-  # The Opscode Platform uses HTTPS. Substitute your organization for
-  # ORGNAME in the URL and validation key.
-  #
-  # If you have your own Chef Server, use the appropriate URL, which may be
-  # HTTP instead of HTTPS depending on your configuration. Also change the
-  # validation key to validation.pem.
-  #
-  # config.vm.provision :chef_client do |chef|
-  #   chef.chef_server_url = "https://api.opscode.com/organizations/ORGNAME"
-  #   chef.validation_key_path = "ORGNAME-validator.pem"
-  # end
-  #
-  # If you're using the Opscode platform, your validator client is
-  # ORGNAME-validator, replacing ORGNAME with your organization name.
-  #
-  # If you have your own Chef Server, the default validation client name is
-  # chef-validator, unless you changed the configuration.
-  #
-  #   chef.validation_client_name = "ORGNAME-validator"
 end

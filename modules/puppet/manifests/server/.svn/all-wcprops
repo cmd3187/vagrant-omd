@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/manifests/server
+END
+apachepassenger.pp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/manifests/server/apachepassenger.pp
+END
+puppetmaster.pp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/manifests/server/puppetmaster.pp
+END

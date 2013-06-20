@@ -1,0 +1,22 @@
+# File managed by Puppet <%= puppetversion %> on <%= puppet_server %>
+
+[main]
+  vardir     = /var/lib/puppet
+  logdir     = /var/log/puppet
+  rundir     = /var/run/puppet
+  ssldir     = $vardir/ssl
+  pluginsync = true
+  server     = <%= puppet_server %>
+
+[agent]
+  classfile   = $vardir/classes.txt
+  localconfig = $vardir/localconfig
+  report      = true
+  runinterval = 300
+  cacert      = "$cadir/ca_crt.pem"
+
+[master]
+  reports        = store, http
+  reporturl      = http://bmipuppetdev.chmcres.cchmc.org:3000/reports/upload
+  #facts_terminus = inventory_active_record
+  #dblocation     = /var/lib/puppet/inventory.db

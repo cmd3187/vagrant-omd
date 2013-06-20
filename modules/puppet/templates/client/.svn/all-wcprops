@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client
+END
+puppet_init-opensuse-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet_init-opensuse-template.erb
+END
+puppet_init-default-template.orig.erb
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet_init-default-template.orig.erb
+END
+puppet_init-default-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet_init-default-template.erb
+END
+puppet.conf-default-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet.conf-default-template.erb
+END
+puppet_sysconfig-default-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet_sysconfig-default-template.erb
+END
+puppet_init-redhat-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet_init-redhat-template.erb
+END
+puppet.conf-2.6-default-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet.conf-2.6-default-template.erb
+END
+puppet_init-suse-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/client/puppet_init-suse-template.erb
+END

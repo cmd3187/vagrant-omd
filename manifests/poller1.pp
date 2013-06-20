@@ -1,11 +1,8 @@
 include iptables
 include omd
 
-#omd::config{ 'dev':
-#   site => "dev",
-#}
-
 omd::site{ 'test':
    core => 'icinga',
-   isMaster => 'false',
+   gearman_worker => true,
+   master => "192.168.56.100:4730",
 }

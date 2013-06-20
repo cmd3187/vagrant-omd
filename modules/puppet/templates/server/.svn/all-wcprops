@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/server
+END
+puppet.conf-template.erb
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/bmipuppet/bmipuppetdev/!svn/ver/1/modules/puppet/templates/server/puppet.conf-template.erb
+END
