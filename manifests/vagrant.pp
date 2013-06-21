@@ -1,6 +1,5 @@
 node 'common' {
    include iptables
-   include omd
 
    host { "localhost":
       ensure => present,
@@ -22,9 +21,27 @@ node 'common' {
       host_aliases => ['poller2'],
       ip => "192.168.56.102",
    }
+   host { "puppet.exmaple.com":
+      ensure => present,
+      host_aliases => ['puppet'],
+      ip => "192.168.56.200"
+   }
+
+   yumrepo { 'epel':
+      descr => 'Extra Packages for Enterprise Linux 6 - $basearch',
+      mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+      failovermethod => 'priority',
+      enabled => 1,
+      gpgcheck => 0,
+      gpgkey => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6',
+   }
 }
 
-node 'collector.example.com' inherits 'common' {
+node 'icigna_servers' inherits 'common' {
+   include omd
+}
+
+node 'collector.example.com' inherits 'icinga_servers' {
    omd::site{ 'test':
       core => 'icinga',
       gearmand => true,
@@ -50,7 +67,7 @@ node 'collector.example.com' inherits 'common' {
    }
 }
 
-node 'poller1.example.com' inherits 'common' {
+node 'poller1.example.com' inherits 'icinga_servers' {
    omd::site{ 'test':
       core => 'icinga',
       gearman_worker => true,
@@ -66,7 +83,7 @@ node 'poller1.example.com' inherits 'common' {
    }
 }
 
-node 'poller2.example.com' inherits 'common' {
+node 'poller2.example.com' inherits 'icinga_servers' {
    omd::site{ 'test':
       core => 'icinga',
       gearman_worker => true,
@@ -80,4 +97,11 @@ node 'poller2.example.com' inherits 'common' {
       target => "/opt/omd/sites/test/etc/icinga/conf.d/hosts/poller2.example.com.cfg",
       tag => "poller",
    }  
+}
+
+node 'puppet.example.com' inherits 'common' {
+   # Dependency Tree
+   Yumrepo['epel'] -> Class['puppet::server']
+
+   class { 'puppet': puppet_server => "puppet.example.com" }  
 }

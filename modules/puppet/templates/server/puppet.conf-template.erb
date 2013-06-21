@@ -16,7 +16,12 @@
   cacert      = "$cadir/ca_crt.pem"
 
 [master]
-  reports        = store, http
-  reporturl      = http://bmipuppetdev.chmcres.cchmc.org:3000/reports/upload
+  reports        = store
+  #reporturl      = http://bmipuppetdev.chmcres.cchmc.org:3000/reports/upload
   #facts_terminus = inventory_active_record
-  #dblocation     = /var/lib/puppet/inventory.db
+  dblocation     = /var/lib/puppet/inventory.db
+  modulepath     = /tmp/vagrant-puppet/modules-0
+  manifestdir    = /tmp/vagrant-puppet/manifests
+  storeconfigs = true
+  dbadapter = sqlite3
+  autosign = true

@@ -12,12 +12,29 @@ class puppet::server($puppet_server='') inherits puppet{
 		name => "puppet-server",
 		ensure => present
 	}
+
+   package { 'activerecord':
+      provider => 'gem',
+      ensure => '2.3.8',
+   }
+
+   package { 'sqlite':
+      ensure => installed
+   }
+
+   package { 'rubygem-sqlite3-ruby':
+      ensure => installed,
+   }
 	#####package==end######
 
 	#####config==start#####
         File["puppet.conf"] {
 		content	=> template('puppet/server/puppet.conf-template.erb'),
-		require	+> Package['puppet-server'],
+		require	+> [ Package['puppet-server'],
+         Package['activerecord'],
+         Package['sqlite'],
+         Package['rubygem-sqlite3-ruby'],
+      ]
         }
 	#####config==end#####
 	
