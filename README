@@ -1,0 +1,24 @@
+h1. OMD Vagrant Lab
+
+h2. Purpose
+
+The purpose of this lab is to built and test out omd and nagios related puppet code for production use. This should allow for a clean and reproducable environment to develop on
+
+h2. Structure
+
+ * Vagrantfile - Main file that describes each of the VMs to be deployed
+ * manifests - Puppet manifests. Files in the root are only used on first boot; nodes/*.pp are persistenly applied.
+ * modules - Puppet modules for puppet, omd, nagios and epel.
+ * epel.repo - Hack to allow puppet to have epel repo packages
+
+h2. Getting started
+
+ # Install the latest Vagrant package for your system
+ # vagrant up
+
+h2. VMs
+
+ * puppet.example.com - Central puppet server that deploys node catalogs. Required for nagios collections
+ * poller1.example.com - Gearman worker/poller. Performs passive/active checks for collector
+ * poller2.example.com - Gearman worker/poller. Performs passive/active checks for collector
+ * collector.example.com - Main nagios server. Collects information from the pollers
