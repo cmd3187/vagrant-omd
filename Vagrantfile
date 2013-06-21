@@ -1,22 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$omd_install = <<SCRIPT
-# Install EPEL Repo
-rpm -Uvh http://mirrors.cat.pdx.edu/epel/6/i386/epel-release-6-8.noarch.rpm
-
-# Download OMD RPM
-wget --progress=dot "http://files.omdistro.org/releases/centos_rhel/omd-1.00-rh61-30.x86_64.rpm"
-
-# Install OMD
-yum -y localinstall --nogpgcheck omd-1.00-rh61-30.x86_64.rpm
-
-# Create "Test" Instance
-omd create test
-sudo -iu test omd start
-
-SCRIPT
-
 Vagrant.configure("2") do |config|
 
   # Puppet Provisioner
@@ -24,10 +8,13 @@ Vagrant.configure("2") do |config|
     puppet.vm.box = "centos-63-x64"
     puppet.vm.network :private_network, ip: "192.168.56.200"
     puppet.vm.hostname = "puppet.example.com"
+    #puppet.vm.provision :shell do |shell|
+    # shell.inline = "yum -y remove puppet && cp /vagrant/epel.repo /etc/yum.repos.d/epel.repo && yum -y install puppet"
+    #end
     puppet.vm.provision :puppet do |pd|
      pd.manifests_path = "manifests"
      pd.module_path = "modules"
-     pd.manifest_file = "puppet.pp"
+     pd.manifest_file = "puppet-epel.pp"
     end
   end
 
@@ -40,11 +27,23 @@ Vagrant.configure("2") do |config|
     collector.vm.provider "virtualbox" do |v|
       v.name = "collector.example.com"
     end
+    #collector.vm.provision :shell do |shell|
+    #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
+    #end
     collector.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
       puppet.module_path = "modules"
-      puppet.manifest_file = "vagrant.pp"
+      puppet.manifest_file = "puppet-epel.pp"
     end
+    collector.vm.provision :puppet_server do |puppet|
+      puppet.puppet_server = "puppet.example.com"
+      puppet.options = "--verbose"
+    end
+    #collector.vm.provision :puppet do |puppet|
+    #  puppet.manifests_path = "manifests"
+    #  puppet.module_path = "modules"
+    #  puppet.manifest_file = "vagrant.pp"
+    #end
   end
 
   config.vm.define :poller1 do |poller1|
@@ -55,11 +54,23 @@ Vagrant.configure("2") do |config|
     poller1.vm.provider "virtualbox" do |v|
       v.name = "poller1.example.com"
     end
+    #poller1.vm.provision :shell do |shell|
+    #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
+    #end
     poller1.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
       puppet.module_path = "modules"
-      puppet.manifest_file = "vagrant.pp"
+      puppet.manifest_file = "puppet-epel.pp"
     end
+    poller1.vm.provision :puppet_server do |puppet|
+      puppet.puppet_server = "puppet.example.com"
+      puppet.options = "--verbose"
+    end
+    #poller1.vm.provision :puppet do |puppet|
+    #  puppet.manifests_path = "manifests"
+    #  puppet.module_path = "modules"
+    #  puppet.manifest_file = "vagrant.pp"
+    #end
   end
 
   config.vm.define :poller2 do |poller2|
@@ -70,11 +81,23 @@ Vagrant.configure("2") do |config|
     poller2.vm.provider "virtualbox" do |v|
       v.name = "poller2.example.com"
     end
+    #poller2.vm.provision :shell do |shell|
+    #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
+    #end
     poller2.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
       puppet.module_path = "modules"
-      puppet.manifest_file = "vagrant.pp"
+      puppet.manifest_file = "puppet-epel.pp"
     end
+    poller2.vm.provision :puppet_server do |puppet|
+      puppet.puppet_server = "puppet.example.com"
+      puppet.options = "--verbose"
+    end
+    #poller2.vm.provision :puppet do |puppet|
+    #  puppet.manifests_path = "manifests"
+    #  puppet.module_path = "modules"
+    #  puppet.manifest_file = "vagrant.pp"
+    #end
   end
 
 end
