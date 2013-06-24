@@ -22,3 +22,49 @@ h2. VMs
  * poller1.example.com - Gearman worker/poller. Performs passive/active checks for collector
  * poller2.example.com - Gearman worker/poller. Performs passive/active checks for collector
  * collector.example.com - Main nagios server. Collects information from the pollers
+
+h2. Server Classes
+
+h3. Collection (Nagios/Icinga Core)
+
+ * Parameters:
+   * APACHE_MODE: own
+   * CORE: icinga
+   * GEARMAND: on
+   * GEARMAND_PORT: collector.example.com:4730
+   * GEARMAN_WORKER: off
+   * MOD_GEARMAN: on
+   * PNP4NAGIOS: on
+   * TMPFS: on
+
+h3. Poller (mod_gearman/nagios plugins machines)
+
+ * Parameters:
+   * APACHE_MODE=none
+   * CORE=none
+   * MKEVENTD=off
+   * MONGODB=off
+   * MYSQL=off
+   * NAGVIS_URLS=auto
+   * PNP4NAGIOS=gearman
+   * GEARMAND_PORT=collector:4730
+   * GEARMAND=off
+   * GEARMAN_WORKER=on
+   * MOD_GEARMAN=on
+
+h2. What can be done with omd config
+
+ * Turning on gearman
+ * Disabling apache and nagios on pollers
+ * Setting the gearman server IP:PORT
+
+h2. What can't be done with omd config
+
+ * Setting up dup_server parameters for mod_gearman
+ * Setting up hostgroup parameters for mod_gearman
+
+h2. TODO
+
+ * Migrate nagios settings into an omd defined type
+ * Refactor the omd::site type to support working with the "omd config" command
+ * omd::site should restart omd after every set of reconfigurations!

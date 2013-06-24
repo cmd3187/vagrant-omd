@@ -14,7 +14,7 @@ node 'puppet.example.com' {
       max_check_attempts => 3,
       check_command      => "check-host-alive",
       tag                => ["watch"],
-      hostgroups         => ["linux"],
+      hostgroups         => ["site2", "linux"],
       check_interval     => 1, # This is in minutes!
       require            => [ Nagios_hostgroup['monitoring'], Nagios_hostgroup['linux']],
    }

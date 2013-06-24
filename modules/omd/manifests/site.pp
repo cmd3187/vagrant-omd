@@ -1,41 +1,48 @@
 # Class: omd::site
 # Description: Class to provision new sites and manage their configurations
-# Core: { nagios | icinga }
+# apache: { own | none }
+# core: { nagios | icinga | none }
 # gearmand: { true | false }
-# gearman_worker: { true | false }
 # master: "localhost:4730"
+# gearmand_neb: { true | false }
+# gearman_worker: { true | false }
+# mod_gearman: { true | false }
+# masters : [ ] - List of collectors. Will automatically include the master address!
 define omd::site($site = $title, 
+   $apache = 'own',
    $core = 'nagios',
    $gearmand = false,
+   $master = "localhost:4730",
+   $gearman_neb = false,
    $gearman_worker = false,
-   $master = "localhost:4730") {
+   $mod_gearman = false,
+   $hostgroups = [],
+   $masters = [],
+   $password = 'should_be_changed') {
 
-   # Collector Gearman Config Options
-   case $gearmand {
-      false: {
-         $config_gearmand = 'off'
-         $config_gearman_neb = 'off'
-         $config_mod_gearman = 'off'
-      }
-      true: {
-         $config_gearmand = 'on'
-         $config_gearman_neb = 'on'
-         $config_mod_gearman = 'on'
-      }
+   # Gearman config options
+   $config_gearman = $gearmand ? {
+      false => 'off',
+      true  => 'on',
    }
-
-   # Worker/Poller Gearman Config Options
-   case $gearman_worker {
-      false: {
-         $config_gearman_worker = 'off'
-      }
-      true: {
-         $config_gearman_worker = 'on'
-      }
+   $config_gearman_neb = $gearman_neb ? {
+      false => 'off',
+      true  => 'on',
+   }
+   $config_gearman_worker = $gearman_worker ? {
+      false => 'off',
+      true  => 'on',
+   }
+   $config_mod_gearman = $mod_gearman ? {
+      false => 'off',
+      true  => 'on',
    }
 
    # Relationships
    Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}.conf"] -> Exec["omd-${site}-start"]
+   File["${site}.conf"] ~> Service["omd"]
+   File["${site}-worker.conf"] ~> Service["omd"]
+   File["${site}-server.conf"] ~> Service["omd"]
 
    exec { "omd-${site}-create":   
       command => "omd create $site",
@@ -55,5 +62,17 @@ define omd::site($site = $title,
       content => template("omd/site.conf.erb"),
       path => "/omd/sites/${site}/etc/omd/site.conf",
       owner => "${site}", 
+   }
+
+   file { "${site}-worker.conf":
+      content => template("omd/worker.cnf.erb"),
+      path    => "/omd/sites/${site}/etc/mod-gearman/worker.cfg",
+      owner   => "${site}",
+   }
+
+   file { "${site}-server.conf":
+      content => template("omd/server.cnf.erb"),
+      path    => "/omd/sites/${site}/etc/mod-gearman/server.cfg",
+      owner   => "${site}",
    }
 }

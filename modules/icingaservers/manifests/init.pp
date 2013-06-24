@@ -1,7 +1,18 @@
-class icingaservers inherits common {
+class icingaservers($hostgroups = []) inherits common {
    include omd
 
    # Hostgroups
+   nagios_hostgroup { "site1":
+      ensure => present,
+      notes  => "Site 1 servers",
+      target => "/opt/omd/sites/test/etc/nagios/conf.d/hostgroups/site1.cfg",
+   }
+   nagios_hostgroup { "site2":
+      ensure => present,
+      notes  => "Site 2 servers",
+      target => "/opt/omd/sites/test/etc/nagios/conf.d/hostgroups/site2.cfg",
+   }
+
    nagios_hostgroup { "monitoring":
       ensure => present,
       notes  => "All servers that should be monitored",
@@ -26,9 +37,12 @@ class icingaservers inherits common {
       max_check_attempts => 3,
       check_command      => "check-host-alive",
       tag                => ["poller", "watch"],
-      hostgroups         => ["monitoring", "linux"],
+      hostgroups         => $hostgroups,
       check_interval     => 1, # This is in minutes!
-      require            => [ Nagios_hostgroup['monitoring'], Nagios_hostgroup['linux']],
+      require            => [ Nagios_hostgroup['linux'],
+         Nagios_hostgroup['monitoring'],
+         Nagios_hostgroup['site1'],
+         Nagios_hostgroup['site2'],],
    }
    
    file {"nagios-config-perms":
