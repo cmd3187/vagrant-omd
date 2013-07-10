@@ -11,6 +11,10 @@ Vagrant.configure("2") do |config|
     #puppet.vm.provision :shell do |shell|
     # shell.inline = "yum -y remove puppet && cp /vagrant/epel.repo /etc/yum.repos.d/epel.repo && yum -y install puppet"
     #end
+    puppet.vm.provider "virtualbox" do |v|
+      v.customize ['modifyvm', :id, '--nictype1', 'virtio']
+      v.customize ['modifyvm', :id, '--nictype2', 'virtio']
+    end
     puppet.vm.provision :puppet do |pd|
      pd.manifests_path = "manifests"
      pd.module_path = "modules"
@@ -26,6 +30,8 @@ Vagrant.configure("2") do |config|
     collector.vm.hostname = "collector.example.com"
     collector.vm.provider "virtualbox" do |v|
       v.name = "collector.example.com"
+      v.customize ['modifyvm', :id, '--nictype1', 'virtio']
+      v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
     #collector.vm.provision :shell do |shell|
     #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
@@ -53,6 +59,8 @@ Vagrant.configure("2") do |config|
     poller1.vm.hostname = "poller1.example.com"
     poller1.vm.provider "virtualbox" do |v|
       v.name = "poller1.example.com"
+      v.customize ['modifyvm', :id, '--nictype1', 'virtio']
+      v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
     #poller1.vm.provision :shell do |shell|
     #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
@@ -80,6 +88,8 @@ Vagrant.configure("2") do |config|
     poller2.vm.hostname = "poller2.example.com"
     poller2.vm.provider "virtualbox" do |v|
       v.name = "poller2.example.com"
+      v.customize ['modifyvm', :id, '--nictype1', 'virtio']
+      v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
     #poller2.vm.provision :shell do |shell|
     #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
