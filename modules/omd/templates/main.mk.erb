@@ -1,0 +1,13 @@
+# Put your host names here (Find a way to make puppet do this automatically)
+# # all_hosts = [ 'localhost' ]
+all_hosts = [ ]
+<%-if @gearmand or @gearman_worker %>check_submission = "gearman"<%end %>
+generate_hostconf = False
+<%-if @gearmand %>gearman_server = [ "<%=master %>" ]
+<%-elsif @gearman_worker -%>
+gearman_server = [ <% masters.each do |master| -%>"<%=master %>"<%end -%> ]
+<%- end -%>
+<%- if @gearmand or @gearman_worker -%>
+gearman_encryption = True
+gearman_secret = "common_password"
+<%- end -%>

@@ -5,17 +5,10 @@ node 'puppet.example.com' {
    Yumrepo['epel'] -> Class['puppet::server']
 
    class { 'puppet': puppet_server => "puppet.example.com" } 
-  
-   @@nagios_host { $fqdn:
-      address            => $ipaddress_eth1,
-      alias              => $hostname,
-      ensure             => present,
-      target             => "/opt/omd/sites/test/etc/nagios/conf.d/hosts/${fqdn}.cfg",
-      max_check_attempts => 3,
-      check_command      => "check-host-alive",
-      tag                => ["watch"],
-      hostgroups         => ["site2", "linux"],
-      check_interval     => 1, # This is in minutes!
-      require            => [ Nagios_hostgroup['monitoring'], Nagios_hostgroup['linux']],
+
+   class{ 'omd::watch':
+      address    => $ipaddress_eth1,
+      site_name  => 'test',
+      hostgroups => ["site2", "linux"],
    }
 }
