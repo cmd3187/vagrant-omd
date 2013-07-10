@@ -1,0 +1,138 @@
+diff --git a/modules/check_mk.py b/modules/check_mk.py
+index b43eea9..8afa83a 100755
+--- a/modules/check_mk.py
++++ b/modules/check_mk.py
+@@ -319,6 +319,13 @@ scanparent_hosts                     = [ ( ALL_HOSTS ) ]
+ host_attributes                      = {} # needed by WATO, ignored by Check_MK
+ ping_levels                          = [] # special parameters for host/PING check_command
+ check_periods                        = []
++gearman_secret                       = None
++gearman_secret_file                  = None
++gearman_encryption                   = True
++gearman_server                       = [ 'localhost:4730' ]
++gearman_dup_server                   = False
++gearman_queue                        = 'check_results'
++gearman_dup_queue                    = 'check_results_test'
+ 
+ # global variables used to cache temporary values (not needed in check_mk_base)
+ ip_to_hostname_cache = None
+@@ -2663,6 +2670,8 @@ no_inventory_possible = None
+                  'www_group', 'cluster_max_cachefile_age', 'check_max_cachefile_age',
+                  'simulation_mode', 'agent_simulator', 'aggregate_check_mk', 'debug_log',
+                  'check_mk_perfdata_with_times', 'livestatus_unix_socket',
++                 'gearman_server', 'gearman_secret', 'gearman_queue', 'gearman_dup_server',
++                 'gearman_dup_queue', 'gearman_secret_file', 'gearman_encryption',
+                  ]:
+         output.write("%s = %r\n" % (var, globals()[var]))
+ 
+diff --git a/modules/check_mk_base.py b/modules/check_mk_base.py
+index fef93c1..af6ee47 100755
+--- a/modules/check_mk_base.py
++++ b/modules/check_mk_base.py
+@@ -24,7 +24,8 @@
+ # to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+ # Boston, MA 02110-1301 USA.
+ 
+-import socket, os, sys, time, re, signal, math, tempfile
++import socket, os, sys, time, re, signal, math, tempfile, gearman, base64
++from Crypto.Cipher import AES
+ 
+ # Python 2.3 does not have 'set' in normal namespace.
+ # But it can be imported from 'sets'
+@@ -1084,8 +1085,41 @@ return_code=%d
+ output=%s
+ 
+ """ % (host, service, now, now, state, output))
++    elif check_submission == "gearman":
++        queue = gearman_queue
++        now = time.time()
++
++        # Create gearman job 'payload'
++        cmkout = gearman_encode(("type=%s\nhost_name=%s\nstart_time=%.1f\nfinish_time=%.1f\nlatency=%d\nreturn_code=%d\nservice_description=%s\noutput=%s\n" %
++                 ("passive", host, now, now, 0.0, state, service, output)))
++
++        # send job to gearman_server
++        try:
++            gearman_client = gearman.GearmanClient(gearman_server)
++            completed_job_request = gearman_client.submit_job(queue, cmkout, background=True, wait_until_complete=False)
++        except Exception, e:
++            # Cleanup Error output (remove '<', '>') an raise error
++            errorout = str(e)
++            errorout = (errorout.replace('<', '')).replace('>', '')
++            raise MKGeneralException("GEARMAN %s" % errorout)
++
++        # send job to gearman_dup_server
++        if gearman_dup_server:
++            if gearman_dup_queue:
++                queue = gearman_dup_queue
++            for s in gearman_dup_server:
++                try:
++                    gearman_client = gearman.GearmanClient(s)
++                    completed_job_request = gearman_client.submit_job(queue, cmkout, background=True, wait_until_complete=False)
++                except Exception, e:
++                    # Cleanup Error output (remove '<', '>') an raise error
++                    errorout = str(e)
++                    errorout = (errorout.replace('<', '')).replace('>', '')
++                    # If sending to dup servers fails just go on
++                    # raise MKGeneralException("GEARMAN %s" % errorout)
++                    pass
+     else:
+-        raise MKGeneralException("Invalid setting %r for check_submission. Must be 'pipe' or 'file'" % check_submission)
++        raise MKGeneralException("Invalid setting %r for check_submission. Must be 'pipe', 'file' or 'gearman'" % check_submission)
+ 
+ 
+ #   +----------------------------------------------------------------------+
+@@ -1116,6 +1150,53 @@ def nodes_of(hostname):
+             return nodes
+     return None
+ 
++# (Gearman) Returns AES secret if encryption is on
++def gearman_get_secretkey():
++    secretkey = None
++
++    # maximum/minimum key string size.
++    secretkey_maxsize = 32
++
++    # Read key from gearman_secret or gearman_secret_file. Strip \t,\n,\r and spaces
++    # gearman_secret takes precendence
++    if gearman_encryption:
++        if gearman_secret:
++            secretkey = gearman_secret.strip(' \t\n\r')
++        elif gearman_secret_file:
++            f = open(gearman_secret_file, 'r')
++            for key in f.readlines():
++                # return the first non-empty line as key
++                if not key.isspace():
++                    secretkey = key.strip(' \t\n\r')
++                    break
++
++        # bring keystring to the right size. If it's too short, fill with \x0; if it's too long, truncate to 32
++        try:
++            if (len(secretkey) < secretkey_maxsize):
++                 mod = secretkey_maxsize - len(secretkey)%secretkey_maxsize
++                 for i in range(mod):
++                    secretkey = secretkey + chr(0)
++            elif (len(secretkey) > secretkey_maxsize):
++                secretkey = secretkey[0:secretkey_maxsize]
++        except:
++            raise MKGeneralException("Encrpytion without key or empty keyfile not possible")
++
++    return secretkey
++
++# (Gearman) Returns encoded string (job payload). If encryption is on, payload will be AES encypted
++# else payload is base64 encoded
++def gearman_encode(decrypted_string):
++    if gearman_encryption:
++        aes_secretkey = str(gearman_get_secretkey())
++        # pad the text to be encrypted
++        aes_blocksize = 16
++        aes_padding_char = '{'
++        aes_pad = lambda s: s + (aes_blocksize - len(s) % aes_blocksize) * aes_padding_char
++        cipher = AES.new(aes_secretkey)
++        output = base64.b64encode(cipher.encrypt(aes_pad(decrypted_string)))
++    else:
++        output = base64.b64encode(decrypted_string)
++    return output
+ 
+ #   +----------------------------------------------------------------------+
+ #   |     ____ _               _      _          _                         |

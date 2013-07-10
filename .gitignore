@@ -1,0 +1,13 @@
+# General Junk
+.directory
+
+# Localized Vagrant info
+.vagrant
+data/*
+jbrowse_data/*
+
+# Eclipse information
+.project
+
+# Capture Files
+*.pcap
