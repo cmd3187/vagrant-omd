@@ -16,8 +16,8 @@ Vagrant.configure("2") do |config|
       v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
     puppet.vm.provision :puppet do |pd|
-     pd.manifests_path = "manifests"
-     pd.module_path = "modules"
+     pd.manifests_path = "puppet/manifests"
+     pd.module_path = "puppet/modules"
      pd.manifest_file = "puppet-epel.pp"
     end
   end
@@ -37,8 +37,8 @@ Vagrant.configure("2") do |config|
     #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
     #end
     collector.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "manifests"
-      puppet.module_path = "modules"
+      puppet.manifests_path = "puppet/manifests"
+      puppet.module_path = "puppet/modules"
       puppet.manifest_file = "puppet-epel.pp"
     end
     collector.vm.provision :puppet_server do |puppet|
@@ -66,8 +66,8 @@ Vagrant.configure("2") do |config|
     #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
     #end
     poller1.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "manifests"
-      puppet.module_path = "modules"
+      puppet.manifests_path = "puppet/manifests"
+      puppet.module_path = "puppet/modules"
       puppet.manifest_file = "puppet-epel.pp"
     end
     poller1.vm.provision :puppet_server do |puppet|
@@ -95,8 +95,8 @@ Vagrant.configure("2") do |config|
     #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
     #end
     poller2.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "manifests"
-      puppet.module_path = "modules"
+      puppet.manifests_path = "puppet/manifests"
+      puppet.module_path = "puppet/modules"
       puppet.manifest_file = "puppet-epel.pp"
     end
     poller2.vm.provision :puppet_server do |puppet|
