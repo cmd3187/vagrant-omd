@@ -77,5 +77,5 @@ h2. TODO
 
 h2. Links
 
- * !http://docs.icinga.org/latest/en/redundancy.html#failovermonitoring(Icinga Failover)!
- * !http://mathias-kettner.de/checkmk_mrpe.html(Check_MK's MRPE Module)!
+ * "Icinga Failover":http://docs.icinga.org/latest/en/redundancy.html#failovermonitoring
+ * "Check_MK's MRPE Module":http://mathias-kettner.de/checkmk_mrpe.html
