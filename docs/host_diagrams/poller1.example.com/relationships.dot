@@ -1,0 +1,344 @@
+digraph Relationships {
+    label = "Relationships"
+    "File[test-nagios-hostgroup-dir]" [
+        fontsize = 8,
+        label = "File[test-nagios-hostgroup-dir]"
+    ]
+
+    "Schedule[daily]" [
+        fontsize = 8,
+        label = "Schedule[daily]"
+    ]
+
+    "Omd::Poller[test]" [
+        fontsize = 8,
+        label = "Omd::Poller[test]"
+    ]
+
+    "Exec[test-check_mk-gen-services]" [
+        fontsize = 8,
+        label = "Exec[test-check_mk-gen-services]"
+    ]
+
+    "File[poller2.example.com-cmk-config]" [
+        fontsize = 8,
+        label = "File[poller2.example.com-cmk-config]"
+    ]
+
+    "Class[Settings]" [
+        fontsize = 8,
+        label = "Class[Settings]"
+    ]
+
+    "Node[poller1.example.com]" [
+        fontsize = 8,
+        label = "Node[poller1.example.com]"
+    ]
+
+    "Exec[omd-test-create]" [
+        fontsize = 8,
+        label = "Exec[omd-test-create]"
+    ]
+
+    "Service[omd]" [
+        fontsize = 8,
+        label = "Service[omd]"
+    ]
+
+    "Schedule[weekly]" [
+        fontsize = 8,
+        label = "Schedule[weekly]"
+    ]
+
+    "Nagios_host[collector.example.com]" [
+        fontsize = 8,
+        label = "Nagios_host[collector.example.com]"
+    ]
+
+    "File[poller1.example.com-cmk-config]" [
+        fontsize = 8,
+        label = "File[poller1.example.com-cmk-config]"
+    ]
+
+    "File[puppet.example.com-cmk-config]" [
+        fontsize = 8,
+        label = "File[puppet.example.com-cmk-config]"
+    ]
+
+    "File[test-main.mk]" [
+        fontsize = 8,
+        label = "File[test-main.mk]"
+    ]
+
+    "Yumrepo[omdrepo]" [
+        fontsize = 8,
+        label = "Yumrepo[omdrepo]"
+    ]
+
+    "Class[Omd::Watch]" [
+        fontsize = 8,
+        label = "Class[Omd::Watch]"
+    ]
+
+    "Class[Omd::Install]" [
+        fontsize = 8,
+        label = "Class[Omd::Install]"
+    ]
+
+    "Stage[main]" [
+        fontsize = 8,
+        label = "Stage[main]"
+    ]
+
+    "File[test-worker.conf]" [
+        fontsize = 8,
+        label = "File[test-worker.conf]"
+    ]
+
+    "File[test-nagios-config-perms]" [
+        fontsize = 8,
+        label = "File[test-nagios-config-perms]"
+    ]
+
+    "Exec[test-check_mk-precompile]" [
+        fontsize = 8,
+        label = "Exec[test-check_mk-precompile]"
+    ]
+
+    "File[test.conf]" [
+        fontsize = 8,
+        label = "File[test.conf]"
+    ]
+
+    "Schedule[puppet]" [
+        fontsize = 8,
+        label = "Schedule[puppet]"
+    ]
+
+    "File[collector.example.com-cmk-config]" [
+        fontsize = 8,
+        label = "File[collector.example.com-cmk-config]"
+    ]
+
+    "Schedule[never]" [
+        fontsize = 8,
+        label = "Schedule[never]"
+    ]
+
+    "Exec[omd-test-start]" [
+        fontsize = 8,
+        label = "Exec[omd-test-start]"
+    ]
+
+    "Class[Omd::Service]" [
+        fontsize = 8,
+        label = "Class[Omd::Service]"
+    ]
+
+    "Omd::Site[test]" [
+        fontsize = 8,
+        label = "Omd::Site[test]"
+    ]
+
+    "Cron[copy-dots]" [
+        fontsize = 8,
+        label = "Cron[copy-dots]"
+    ]
+
+    "Schedule[monthly]" [
+        fontsize = 8,
+        label = "Schedule[monthly]"
+    ]
+
+    "Schedule[hourly]" [
+        fontsize = 8,
+        label = "Schedule[hourly]"
+    ]
+
+    "File[test-nagios-config-link]" [
+        fontsize = 8,
+        label = "File[test-nagios-config-link]"
+    ]
+
+    "Nagios_host[puppet.example.com]" [
+        fontsize = 8,
+        label = "Nagios_host[puppet.example.com]"
+    ]
+
+    "Class[Main]" [
+        fontsize = 8,
+        label = "Class[Main]"
+    ]
+
+    "Nagios_host[poller2.example.com]" [
+        fontsize = 8,
+        label = "Nagios_host[poller2.example.com]"
+    ]
+
+    "Class[Omd]" [
+        fontsize = 8,
+        label = "Class[Omd]"
+    ]
+
+    "File[test-server.conf]" [
+        fontsize = 8,
+        label = "File[test-server.conf]"
+    ]
+
+    "Nagios_host[poller1.example.com]" [
+        fontsize = 8,
+        label = "Nagios_host[poller1.example.com]"
+    ]
+
+    "Filebucket[puppet]" [
+        fontsize = 8,
+        label = "Filebucket[puppet]"
+    ]
+
+    "File[test-nagios-host-dir]" [
+        fontsize = 8,
+        label = "File[test-nagios-host-dir]"
+    ]
+
+    "Package[omd]" [
+        fontsize = 8,
+        label = "Package[omd]"
+    ]
+
+    "File[poller2.example.com-cmk-config]" -> "File[test-main.mk]" [
+        fontsize = 8
+    ]
+
+    "Class[Omd]" -> "Omd::Poller[test]" [
+        fontsize = 8
+    ]
+
+    "Package[omd]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "Exec[omd-test-create]" -> "File[test.conf]" [
+        fontsize = 8
+    ]
+
+    "File[puppet.example.com-cmk-config]" -> "File[test-main.mk]" [
+        fontsize = 8
+    ]
+
+    "File[poller1.example.com-cmk-config]" -> "File[test-main.mk]" [
+        fontsize = 8
+    ]
+
+    "File[test-main.mk]" -> "Exec[test-check_mk-precompile]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-perms]" -> "Nagios_host[collector.example.com]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-link]" -> "Nagios_host[collector.example.com]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[collector.example.com]" -> "File[test-nagios-host-dir]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[collector.example.com]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "File[test-worker.conf]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "Class[Omd::Install]" -> "Class[Omd::Service]" [
+        fontsize = 8
+    ]
+
+    "Class[Omd::Install]" -> "Exec[omd-test-create]" [
+        fontsize = 8
+    ]
+
+    "Exec[test-check_mk-precompile]" -> "Exec[test-check_mk-gen-services]" [
+        fontsize = 8
+    ]
+
+    "Yumrepo[omdrepo]" -> "Package[omd]" [
+        fontsize = 8
+    ]
+
+    "File[test.conf]" -> "Exec[omd-test-start]" [
+        fontsize = 8
+    ]
+
+    "File[test.conf]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "File[collector.example.com-cmk-config]" -> "File[test-main.mk]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-perms]" -> "Nagios_host[poller2.example.com]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-link]" -> "Nagios_host[poller2.example.com]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[poller2.example.com]" -> "File[test-nagios-host-dir]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[poller2.example.com]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-perms]" -> "Nagios_host[puppet.example.com]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-link]" -> "Nagios_host[puppet.example.com]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[puppet.example.com]" -> "File[test-nagios-host-dir]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[puppet.example.com]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-perms]" -> "Nagios_host[poller1.example.com]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-link]" -> "Nagios_host[poller1.example.com]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[poller1.example.com]" -> "File[test-nagios-host-dir]" [
+        fontsize = 8
+    ]
+
+    "Nagios_host[poller1.example.com]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "File[test-server.conf]" -> "Service[omd]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-perms]" -> "File[test-nagios-hostgroup-dir]" [
+        fontsize = 8
+    ]
+
+    "File[test-nagios-config-perms]" -> "File[test-nagios-host-dir]" [
+        fontsize = 8
+    ]
+
+}
