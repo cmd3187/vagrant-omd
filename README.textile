@@ -18,10 +18,23 @@ h2. Getting started
 
 h2. VMs
 
- * puppet.example.com - Central puppet server that deploys node catalogs. Required for nagios collections
+ * puppet.example.com - Central puppet server that deploys node catalogs. Required for nagios exported resource collections
  * poller1.example.com - Gearman worker/poller. Performs passive/active checks for collector
  * poller2.example.com - Gearman worker/poller. Performs passive/active checks for collector
  * collector.example.com - Main nagios server. Collects information from the pollers
+
+h2. Lab Structure
+
+!https://raw.github.com/cmd3187/vagrant-omd/master/docs/relationship_diagram.png(Network Diagram)!
+
+h2. Features
+
+ * N-way redundancy for poller servers
+ * single port usage for all environment ACLs
+ * Variable monitoring core: Icinca/Nagios
+ * Multiple OMD site management
+ * Workload distribution by hostgroup
+ * Helper classes to simplify end host monitoring (Check_MK + nagios objects)
 
 h2. Server Classes
 
@@ -52,19 +65,17 @@ h3. Poller (mod_gearman/nagios plugins machines)
    * GEARMAN_WORKER=on
    * MOD_GEARMAN=on
 
-h2. What can be done with omd config
-
- * Turning on gearman
- * Disabling apache and nagios on pollers
- * Setting the gearman server IP:PORT
-
-h2. What can't be done with omd config
-
- * Setting up dup_server parameters for mod_gearman
- * Setting up hostgroup parameters for mod_gearman
-
 h2. TODO
 
  * Migrate nagios settings into an omd defined type
  * Refactor the omd::site type to support working with the "omd config" command
- * omd::site should restart omd after every set of reconfigurations!
+ * Create check_mk module
+   * Add mod_gearman patches
+   * Add check_mk agent installation
+   * Add MRPE configuration for collectors
+ * Support N-way "collector" configuration
+
+h2. Links
+
+ * !http://docs.icinga.org/latest/en/redundancy.html#failovermonitoring(Icinga Failover)!
+ * !http://mathias-kettner.de/checkmk_mrpe.html(Check_MK's MRPE Module)!
