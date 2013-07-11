@@ -154,7 +154,8 @@ define omd::site($site = $title,
 
    # Check_MK Settings
    # TODO: Make the config add in the patched version of the code
-   File["${site}-main.mk"] -> File <<| tag == "cmk_host" |>> -> Exec["${site}-check_mk-precompile"] -> Exec["${site}-check_mk-gen-services"]
+   #File["${site}-main.mk"] -> File<<| tag == "cmk_host" |>> -> Exec["${site}-check_mk-precompile"] -> Exec["${site}-check_mk-gen-services"]
+   File["${site}-main.mk"] -> Exec["${site}-check_mk-precompile"] -> Exec["${site}-check_mk-gen-services"]
 
    # cmk config file. Includes all_hosts, which list all hosts to be processed by this server
    file { "${site}-main.mk":
@@ -170,6 +171,7 @@ define omd::site($site = $title,
    File <<| tag == "cmk_host" |>> {
       owner  => $site,
       group  => $site,
+      before => File["${site}-main.mk"],
    }
 
    exec { "${site}-check_mk-precompile":
