@@ -1,5 +1,7 @@
 h1. OMD Vagrant Lab
 
+**NOTE: THE MODULES STORED IN THIS PROJECT ARE CURRENTLY EXPERIMENTAL. USE AT YOU OWN RISK!**
+
 h2. Purpose
 
 The purpose of this lab is to built and test out omd and nagios related puppet code for production use. This should allow for a clean and reproducable environment to develop on
