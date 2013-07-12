@@ -1,6 +1,6 @@
 # Put your host names here (Find a way to make puppet do this automatically)
 # # all_hosts = [ 'localhost' ]
-all_hosts = [ ]
+# all_hosts = [ ]
 <%-if @gearmand or @gearman_worker %>check_submission = "gearman"<%end %>
 generate_hostconf = False
 <%-if @gearmand %>gearman_server = [ "<%=master %>" ]

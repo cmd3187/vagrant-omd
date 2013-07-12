@@ -91,14 +91,15 @@ define omd::site($site = $title,
       owner => "${site}", 
    }
 
-   exex { "omd-${site}-force-apply":
-      command     => "awk 'BEGIN { FS="="; print \"omd stop\"; } /CONFIG_/ { print \"omd config set\", substr(\$1, 8), \$2; } END { print \"omd start\" }' etc/omd/site.conf | bash",
+   exec { "omd-${site}-force-apply":
+      command     => "awk 'BEGIN { FS=\"=\"; print \"omd stop\"; } /CONFIG_/ { print \"omd config set\", substr(\$1, 8), \$2; } END { print \"omd start\" }' \$OMD_ROOT/etc/omd/site.conf | bash",
       user        => $site,
       path        => ["/omd/sites/${site}/lib/perl5/bin",
          "/omd/sites/${site}/local/bin",
          "/omd/sites/${site}/bin",
          "/omd/sites/${site}/local/lib/perl5/bin",
          "/sbin", "/bin", "/usr/sbin", "/usr/bin", "/usr/local/sbin"],
+      logoutput => true,
       environment => $env_vars,
       refreshonly => true,
    }
