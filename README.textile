@@ -70,11 +70,9 @@ h3. Poller (mod_gearman/nagios plugins machines)
 h2. TODO
 
  * Migrate nagios settings into an omd defined type
- * Refactor the omd::site type to support working with the "omd config" command
+ * Refactor the omd::site type to support working with the "omd config" command (Partially done)
  * Create check_mk module
-   * Add mod_gearman patches
-   * Add check_mk agent installation
-   * Add MRPE configuration for collectors
+ ** Add MRPE configuration for collectors
  * Support N-way "collector" configuration
 
 h2. Links
