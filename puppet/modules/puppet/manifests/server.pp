@@ -44,9 +44,11 @@ class puppet::server($puppet_server='') inherits puppet{
 		name            => $::os_osfamily ? {
 			default => "puppetmaster",
 		},
-		hasrestart      => true,
-		hasstatus       => true,
-		require         => Package["puppet-server"],
+		hasrestart => true,
+		hasstatus  => true,
+		require    => Package["puppet-server"],
+      ensure     => running,
+      enable     => true,
 	}
 	#####service==end#####
 }

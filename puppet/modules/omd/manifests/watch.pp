@@ -2,6 +2,8 @@ class omd::watch($site_name='test',
     $hostgroups = [],
     $address = $ipaddress,
     $tags = ['watch', 'check_mk']) {
+
+   class { "check_mk": }
   
    # Nagios Host Declaration
    @@nagios_host { $fqdn:

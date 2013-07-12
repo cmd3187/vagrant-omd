@@ -19,3 +19,9 @@ host { "puppet.example.com":
    host_aliases => ['puppet'],
    ip => "192.168.56.200"
 }
+
+# Disable the firewalls just for the proof of concept
+service { "iptables":
+   ensure => false,
+   enable => false,
+}

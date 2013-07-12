@@ -20,6 +20,11 @@ Vagrant.configure("2") do |config|
      pd.module_path = "puppet/modules"
      pd.manifest_file = "puppet-epel.pp"
     end
+    puppet.vm.provision :puppet do |pd|
+     pd.manifests_path = "puppet/manifests"
+     pd.module_path = "puppet/modules"
+     pd.manifest_file = "nodes/puppet.example.com.pp"
+    end
   end
 
   # Core Environment
@@ -29,7 +34,7 @@ Vagrant.configure("2") do |config|
     collector.vm.network :private_network, ip: "192.168.56.100"
     collector.vm.hostname = "collector.example.com"
     collector.vm.provider "virtualbox" do |v|
-      v.name = "collector.example.com"
+      #v.name = "collector.example.com"
       v.customize ['modifyvm', :id, '--nictype1', 'virtio']
       v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
@@ -58,7 +63,7 @@ Vagrant.configure("2") do |config|
     poller1.vm.network :private_network, ip: "192.168.56.101"
     poller1.vm.hostname = "poller1.example.com"
     poller1.vm.provider "virtualbox" do |v|
-      v.name = "poller1.example.com"
+      #v.name = "poller1.example.com"
       v.customize ['modifyvm', :id, '--nictype1', 'virtio']
       v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
@@ -87,7 +92,7 @@ Vagrant.configure("2") do |config|
     poller2.vm.network :private_network, ip: "192.168.56.102"
     poller2.vm.hostname = "poller2.example.com"
     poller2.vm.provider "virtualbox" do |v|
-      v.name = "poller2.example.com"
+      #v.name = "poller2.example.com"
       v.customize ['modifyvm', :id, '--nictype1', 'virtio']
       v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end

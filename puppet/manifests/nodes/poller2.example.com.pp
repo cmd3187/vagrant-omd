@@ -1,4 +1,6 @@
 node 'poller2.example.com' {
+   class { 'hosts': }
+
    omd::poller{ 'test':
       master     => "collector.example.com:4730",
       hostgroups => ['site2'],

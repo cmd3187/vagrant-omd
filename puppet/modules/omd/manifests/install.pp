@@ -1,5 +1,7 @@
 class omd::install {
 
+   require omd::prereq
+
    # Relationships
    Yumrepo['omdrepo'] -> Package['omd']
 

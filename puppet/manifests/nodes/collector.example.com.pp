@@ -1,4 +1,6 @@
 node 'collector.example.com' {
+   class { 'hosts': }
+
    omd::collector{ 'test': 
       hostgroups => ['site1', 'linux'],
    }

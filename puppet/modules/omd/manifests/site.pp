@@ -20,7 +20,8 @@ define omd::site($site = $title,
    $pnp4nag = "on",
    $hostgroups = [],
    $masters = [],
-   $password = 'should_be_changed') {
+   $password = 'should_be_changed',
+   $version = "1.00") {
 
    # check_mk User Variables
    $env_vars = [
@@ -62,11 +63,11 @@ define omd::site($site = $title,
    }
 
    # Relationships
-   Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}.conf"] -> Exec["omd-${site}-start"]
-   File["${site}.conf"] ~> Service["omd"]
-   File["${site}-worker.conf"] ~> Service["omd"]
-   File["${site}-server.conf"] ~> Service["omd"]
-
+   Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}.conf"] -> File["${site}-nagios-config-link"] -> Exec["omd-${site}-start"]
+   Class['omd::install'] -> File["${site}.conf"] ~> Exec["omd-${site}-force-apply"]
+   Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}-worker.conf"] ~> Service["omd"]
+   Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}-server.conf"] ~> Service["omd"]
+   Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}-nagios-config-perms"] -> File["${site}-nagios-hostgroup-dir"] -> File["${site}-nagios-host-dir"]
 
    # Creation scripts
    exec { "omd-${site}-create":   
@@ -88,6 +89,18 @@ define omd::site($site = $title,
       content => template("omd/site.conf.erb"),
       path => "/omd/sites/${site}/etc/omd/site.conf",
       owner => "${site}", 
+   }
+
+   exex { "omd-${site}-force-apply":
+      command     => "awk 'BEGIN { FS="="; print \"omd stop\"; } /CONFIG_/ { print \"omd config set\", substr(\$1, 8), \$2; } END { print \"omd start\" }' etc/omd/site.conf | bash",
+      user        => $site,
+      path        => ["/omd/sites/${site}/lib/perl5/bin",
+         "/omd/sites/${site}/local/bin",
+         "/omd/sites/${site}/bin",
+         "/omd/sites/${site}/local/lib/perl5/bin",
+         "/sbin", "/bin", "/usr/sbin", "/usr/bin", "/usr/local/sbin"],
+      environment => $env_vars,
+      refreshonly => true,
    }
 
    # mod-gearman configs
@@ -131,36 +144,76 @@ define omd::site($site = $title,
       recurse => true,
    }
 
+   exec {"set-${site}-conf-permission":
+      command => "chown -R ${site}:${site} /opt/omd/sites/${site}/etc/nagios/conf.d",
+      path    => ["/omd/sites/${site}/lib/perl5/bin",
+         "/omd/sites/${site}/local/bin",
+         "/omd/sites/${site}/bin",
+         "/omd/sites/${site}/local/lib/perl5/bin",
+         "/sbin", "/bin", "/usr/sbin", "/usr/bin", "/usr/local/sbin"],
+      refreshonly => true,
+   }
+
    Nagios_hostgroup <<| |>> {
       require => [File["${site}-nagios-config-perms"],
-         File["${site}-nagios-config-link"]],
-      notify => Service["omd"],
-      before => File["${site}-nagios-host-dir"],
+         File["${site}-nagios-config-link"],
+         File["${site}-nagios-hostgroup-dir"]],
+      notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
    }
 
    Nagios_host <<| tag == "watch" |>> {
       require => [File["${site}-nagios-config-perms"],
-        File["${site}-nagios-config-link"]],
-      notify => Service["omd"],
-      before => File["${site}-nagios-host-dir"],
+        File["${site}-nagios-config-link"],
+        File["${site}-nagios-host-dir"]],
+      notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
    }
 
    Nagios_service <<| tag == "watch" |>> {
       require => [File["${site}-nagios-config-perms"],
-         File["${site}-nagios-config-link"]],
-      notify => Service["omd"],
-      before => File["${site}-nagios-host-dir"],
+         File["${site}-nagios-config-link"],
+         File["${site}-nagios-host-dir"]],
+      notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
    }
 
    # Check_MK Settings
    # TODO: Make the config add in the patched version of the code
    #File["${site}-main.mk"] -> File<<| tag == "cmk_host" |>> -> Exec["${site}-check_mk-precompile"] -> Exec["${site}-check_mk-gen-services"]
-   File["${site}-main.mk"] -> Exec["${site}-check_mk-precompile"] -> Exec["${site}-check_mk-gen-services"]
+   #Exec["omd-${site}-create"] -> Exec["python-gearman-${site}"] -> Exec["python-pycrypto-${site}"] -> File["check_mk-${version}-patch"] -> File["check_mk_base-${version}-patch"] -> File["${site}-main.mk"] -> Exec["${site}-check_mk-precompile"] -> Exec["${site}-check_mk-gen-services"]
+
+   # Gearman Patch dependecies
+   Exec["python-gearman"] -> File["check_mk-${version}-patch"] -> File["check_mk_base-${version}-patch"]
+   Exec["python-pycrypto"] -> File["check_mk-${version}-patch"] -> File["check_mk_base-${version}-patch"]
+   Exec["omd-${site}-create"] -> File["check_mk-${version}-patch"] -> File["check_mk_base-${version}-patch"]
+   
+   # Configs
+   File["check_mk-${version}-patch"] -> File["${site}-main.mk"]
+   File["check_mk_base-${version}-patch"] -> File["${site}-main.mk"]
+   File["${site}-main.mk"] ~> Exec["${site}-check_mk-precompile"] ~> Exec["${site}-check_mk-gen-services"] ~> Service["omd"]
+
+   # Gearman Patched version of the check_mk package, install easy_install, python-devel, python-setuptools
+   file { "check_mk-${version}-patch":
+      ensure  => present,
+      source  => "puppet:///modules/omd/check_mk/${version}/check_mk.py",
+      path    => "/opt/omd/versions/${version}/share/check_mk/modules/check_mk.py",
+      owner   => "root",
+      group   => "root",
+      mode    => 0755,
+   }
+
+   # Gearman Patched version of che check_mk package, install easy_install, python-devel, python-setuptools
+   file { "check_mk_base-${version}-patch":
+      ensure  => present,
+      source  => "puppet:///modules/omd/check_mk/${version}/check_mk_base.py",
+      path    => "/opt/omd/versions/${version}/share/check_mk/modules/check_mk_base.py",
+      owner   => "root",
+      group   => "root",
+      mode    => 0755,
+   }
 
    # cmk config file. Includes all_hosts, which list all hosts to be processed by this server
    file { "${site}-main.mk":
       content => template('omd/main.mk.erb'),
-      path    => "/opt/omd/sites/${site}/etc/check_mk/main.mk/",
+      path    => "/opt/omd/sites/${site}/etc/check_mk/main.mk",
       owner   => $site,
       group   => $site,
    }
@@ -169,9 +222,11 @@ define omd::site($site = $title,
    $cmk_host_tags = split(inline_template("<%= (hostgroups).join(',') %>,cmk_host"),',')
 
    File <<| tag == "cmk_host" |>> {
-      owner  => $site,
-      group  => $site,
-      before => File["${site}-main.mk"],
+      owner   => $site,
+      group   => $site,
+      before  => File["${site}-main.mk"],
+      require => Exec["omd-${site}-create"],
+      notify  => Exec["${site}-check_mk-precompile"],
    }
 
    exec { "${site}-check_mk-precompile":
@@ -183,6 +238,7 @@ define omd::site($site = $title,
          "/omd/sites/${site}/local/lib/perl5/bin",
          "/sbin", "/bin", "/usr/sbin", "/usr/bin", "/usr/local/sbin"],
       environment => $env_vars,
+      refreshonly => true,
    }
 
    exec { "${site}-check_mk-gen-services":
@@ -194,6 +250,7 @@ define omd::site($site = $title,
          "/omd/sites/${site}/local/lib/perl5/bin",
          "/sbin", "/bin", "/usr/sbin", "/usr/bin", "/usr/local/sbin"],
       environment => $env_vars,
+      refreshonly => true,
    }
       
 }
