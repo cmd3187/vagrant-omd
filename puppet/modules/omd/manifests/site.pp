@@ -72,13 +72,13 @@ define omd::site($site = $title,
    # Creation scripts
    exec { "omd-${site}-create":   
       command => "omd create $site",
-      path => ['/bin', '/usr/bin', '/usr/local/bin'],
+      path    => ['/bin', '/usr/bin', '/usr/local/bin'],
       timeout => 0,
-      unless => "omd status ${site}"
+      unless  => "test -f /omd/sites/${site}/etc/omd/site.conf"
    }
 
    exec { "omd-${site}-start":
-      command => "sudo -iu ${site} omd start",
+      command => "sudo -iu ${site} omd restart",
       path => ['/bin', '/usr/bin', '/usr/local/bin'],
       timeout => 0,
       unless => "omd status ${site}"
@@ -121,27 +121,27 @@ define omd::site($site = $title,
    file {"${site}-nagios-config-perms":
       path => "/opt/omd/sites/${site}/etc/nagios/conf.d",
       ensure => directory,
-      owner => test,
+      owner => $site,
    }
    
    file {"${site}-nagios-config-link":
       target => "/opt/omd/sites/${site}/etc/nagios/conf.d",
       ensure => link,
       path => "/opt/omd/sites/${site}/etc/icinga/conf.d",
-      owner => test,
+      owner => $site,
    }
    
    file {"${site}-nagios-host-dir":
       path => "/opt/omd/sites/${site}/etc/nagios/conf.d/hosts",
       ensure => directory,
-      owner => test,
+      owner => $site,
       recurse => true,
    }
 
    file {"${site}-nagios-hostgroup-dir":
       path    => "/opt/omd/sites/${site}/etc/nagios/conf.d/hostgroups",
       ensure  => directory,
-      owner   => test,
+      owner   => $site,
       recurse => true,
    }
 
@@ -158,22 +158,28 @@ define omd::site($site = $title,
    Nagios_hostgroup <<| |>> {
       require => [File["${site}-nagios-config-perms"],
          File["${site}-nagios-config-link"],
-         File["${site}-nagios-hostgroup-dir"]],
+         File["${site}-nagios-hostgroup-dir"],
+         Exec["omd-${site}-create"]],
       notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
+      before => Exec["omd-${site}-start"]
    }
 
    Nagios_host <<| tag == "watch" |>> {
       require => [File["${site}-nagios-config-perms"],
-        File["${site}-nagios-config-link"],
-        File["${site}-nagios-host-dir"]],
+         File["${site}-nagios-config-link"],
+         File["${site}-nagios-host-dir"],
+         Exec["omd-${site}-create"]],
       notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
+      before => Exec["omd-${site}-start"]
    }
 
    Nagios_service <<| tag == "watch" |>> {
       require => [File["${site}-nagios-config-perms"],
          File["${site}-nagios-config-link"],
-         File["${site}-nagios-host-dir"]],
+         File["${site}-nagios-host-dir"],
+         Exec["omd-${site}-create"]],
       notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
+      before => Exec["omd-${site}-start"]
    }
 
    # Check_MK Settings

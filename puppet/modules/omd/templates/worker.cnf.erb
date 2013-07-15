@@ -98,19 +98,19 @@ job_timeout=60
 
 # Minimum number of worker processes which should
 # run at any time.
-min-worker=5
+min-worker=1
 
 # Maximum number of worker processes which should
 # run at any time. You may set this equal to
 # min-worker setting to disable dynamic starting of
 # workers. When setting this to 1, all services from
 # this worker will be executed one after another.
-max-worker=50
+max-worker=1
 
 # Time after which an idling worker exists
 # This parameter controls how fast your waiting workers will
 # exit if there are no jobs waiting.
-idle-timeout=30
+idle-timeout=600
 
 # Controls the amount of jobs a worker will do before he exits
 # Use this to control how fast the amount of workers will go down
@@ -180,4 +180,4 @@ p1_file=/omd/sites/<%= title %>/share/mod_gearman/mod_gearman_p1.pl
 # the same ressource.
 # Sending results (when exit code is 25 ) will be skipped with this
 # enabled.
-workaround_rc_25=off
+workaround_rc_25=on

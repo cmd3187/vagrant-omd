@@ -9,6 +9,7 @@ define omd::collector( $master = "${ipaddress_eth1}:4730",
       gearman_neb    => true,
       mod_gearman    => true,
       gearman_worker => false,
+      pnp4nag        => 'gearman',
       password       => 'common_password',
    }
 
