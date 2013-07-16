@@ -196,23 +196,27 @@ define omd::site($site = $title,
    File["${site}-main.mk"] ~> Exec["${site}-check_mk-precompile"] ~> Exec["${site}-check_mk-gen-services"] ~> Service["omd"]
 
    # Gearman Patched version of the check_mk package, install easy_install, python-devel, python-setuptools
-   file { "check_mk-${version}-patch":
-      ensure  => present,
-      source  => "puppet:///modules/omd/check_mk/${version}/check_mk.py",
-      path    => "/opt/omd/versions/${version}/share/check_mk/modules/check_mk.py",
-      owner   => "root",
-      group   => "root",
-      mode    => 0755,
+   if (!defined(File["check_mk-${version}-patch"])) {
+      file { "check_mk-${version}-patch":
+         ensure  => present,
+         source  => "puppet:///modules/omd/check_mk/${version}/check_mk.py",
+         path    => "/opt/omd/versions/${version}/share/check_mk/modules/check_mk.py",
+         owner   => "root",
+         group   => "root",
+         mode    => 0755,
+      }
    }
 
    # Gearman Patched version of che check_mk package, install easy_install, python-devel, python-setuptools
-   file { "check_mk_base-${version}-patch":
-      ensure  => present,
-      source  => "puppet:///modules/omd/check_mk/${version}/check_mk_base.py",
-      path    => "/opt/omd/versions/${version}/share/check_mk/modules/check_mk_base.py",
-      owner   => "root",
-      group   => "root",
-      mode    => 0755,
+   if (!defined(File["check_mk_base-${version}-patch"])) {
+      file { "check_mk_base-${version}-patch":
+         ensure  => present,
+         source  => "puppet:///modules/omd/check_mk/${version}/check_mk_base.py",
+         path    => "/opt/omd/versions/${version}/share/check_mk/modules/check_mk_base.py",
+         owner   => "root",
+         group   => "root",
+         mode    => 0755,
+      }
    }
 
    # cmk config file. Includes all_hosts, which list all hosts to be processed by this server
