@@ -8,9 +8,6 @@ Vagrant.configure("2") do |config|
     puppet.vm.box = "centos-63-x64"
     puppet.vm.network :private_network, ip: "192.168.56.200"
     puppet.vm.hostname = "puppet.example.com"
-    #puppet.vm.provision :shell do |shell|
-    # shell.inline = "yum -y remove puppet && cp /vagrant/epel.repo /etc/yum.repos.d/epel.repo && yum -y install puppet"
-    #end
     puppet.vm.provider "virtualbox" do |v|
       v.customize ['modifyvm', :id, '--nictype1', 'virtio']
       v.customize ['modifyvm', :id, '--nictype2', 'virtio']
@@ -28,33 +25,44 @@ Vagrant.configure("2") do |config|
   end
 
   # Core Environment
-  config.vm.define :collector do |collector|
-    collector.vm.box = "centos-63-x64"
-    collector.vm.network :forwarded_port, guest: 80, host: 8080
-    collector.vm.network :private_network, ip: "192.168.56.100"
-    collector.vm.hostname = "collector.example.com"
-    collector.vm.provider "virtualbox" do |v|
-      #v.name = "collector.example.com"
+  config.vm.define :collector1 do |collector1|
+    collector1.vm.box = "centos-63-x64"
+    collector1.vm.network :forwarded_port, guest: 80, host: 8080
+    collector1.vm.network :private_network, ip: "192.168.56.100"
+    collector1.vm.hostname = "collector1.example.com"
+    collector1.vm.provider "virtualbox" do |v|
       v.customize ['modifyvm', :id, '--nictype1', 'virtio']
       v.customize ['modifyvm', :id, '--nictype2', 'virtio']
     end
-    #collector.vm.provision :shell do |shell|
-    #  shell.inline = "echo '192.168.56.200 puppet.example.com puppet' >> /etc/hosts"
-    #end
-    collector.vm.provision :puppet do |puppet|
+    collector1.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet/manifests"
       puppet.module_path = "puppet/modules"
       puppet.manifest_file = "puppet-epel.pp"
     end
-    collector.vm.provision :puppet_server do |puppet|
+    collector1.vm.provision :puppet_server do |puppet|
       puppet.puppet_server = "puppet.example.com"
       puppet.options = "--verbose"
     end
-    #collector.vm.provision :puppet do |puppet|
-    #  puppet.manifests_path = "manifests"
-    #  puppet.module_path = "modules"
-    #  puppet.manifest_file = "vagrant.pp"
-    #end
+  end
+
+  config.vm.define :collector2 do |collector2|
+    collector2.vm.box = "centos-63-x64"
+    collector2.vm.network :forwarded_port, guest: 80, host: 8080
+    collector2.vm.network :private_network, ip: "192.168.56.103"
+    collector2.vm.hostname = "collector2.example.com"
+    collector2.vm.provider "virtualbox" do |v|
+      v.customize ['modifyvm', :id, '--nictype1', 'virtio']
+      v.customize ['modifyvm', :id, '--nictype2', 'virtio']
+    end
+    collector2.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "puppet/manifests"
+      puppet.module_path = "puppet/modules"
+      puppet.manifest_file = "puppet-epel.pp"
+    end
+    collector2.vm.provision :puppet_server do |puppet|
+      puppet.puppet_server = "puppet.example.com"
+      puppet.options = "--verbose"
+    end
   end
 
   config.vm.define :poller1 do |poller1|

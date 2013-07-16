@@ -1,11 +1,11 @@
-define omd::collector( $master = "${ipaddress_eth1}:4730",
+define omd::collector( $masters = ["${ipaddress_eth1}:4730"],
       $hostgroups = []) {
    require omd
 
    omd::site{ $title :
       core           => 'icinga',
       gearmand       => true,
-      masters        => [$master],
+      masters        => $masters,
       gearman_neb    => true,
       mod_gearman    => true,
       gearman_worker => false,

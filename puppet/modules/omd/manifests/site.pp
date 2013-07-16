@@ -66,6 +66,8 @@ define omd::site($site = $title,
    Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}-worker.conf"] ~> Service["omd"]
    Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}-server.conf"] ~> Service["omd"]
    Class['omd::install'] -> Exec["omd-${site}-create"] -> File["${site}-nagios-config-perms"] -> File["${site}-nagios-hostgroup-dir"] -> File["${site}-nagios-host-dir"]
+   Exec["omd-${site}-create"] -> File["omd-${site}-mkactive"]
+   Exec["omd-${site}-create"] -> File["omd-${site}-mkstandby"]
 
    # Creation scripts
    exec { "omd-${site}-create":   
@@ -178,6 +180,23 @@ define omd::site($site = $title,
          Exec["omd-${site}-create"]],
       notify => [Exec["set-${site}-conf-permission"], Service["omd"]],
       before => Exec["omd-${site}-start"]
+   }
+
+   # Multi-master helper scripts (Should be run by Corosync or some other HA tool)
+   file { "omd-${site}-mkactive":
+      mode    => 755,
+      owner   => $site,
+      group   => $site,
+      content => template("omd/make_active.sh.erb"),
+      path    => "/omd/sites/${site}/var/tmp/make_active.sh",
+   }
+
+   file { "omd-${site}-mkstandby":
+      mode    => 755,
+      owner   => $site,
+      group   => $site,
+      content => template("omd/make_standby.sh.erb"),
+      path    => "/omd/sites/${site}/var/tmp/make_passive.sh",
    }
 
    # Check_MK Settings

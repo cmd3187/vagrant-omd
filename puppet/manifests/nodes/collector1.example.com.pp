@@ -1,7 +1,8 @@
-node 'collector.example.com' {
+node 'collector1.example.com' {
    class { 'hosts': }
 
-   omd::collector{ 'test': 
+   omd::collector{ 'test':
+      masters    => ["${ipaddress_eth1}:4730", "192.168.56.103:4730"], 
       hostgroups => ['site1', 'linux'],
    }
 

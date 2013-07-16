@@ -1,4 +1,4 @@
-define omd::poller( $master = "localhost:4730",
+define omd::poller( $masters = ["localhost:4730"],
       $hostgroups = []) {
    require omd
    $checks = ["\"omd_status\", \"${title}\", None",
@@ -7,7 +7,7 @@ define omd::poller( $master = "localhost:4730",
    omd::site{ $title :
       apache         => 'none',
       core           => 'none',
-      masters        => [$master],
+      masters        => $masters,
       gearman_worker => true,
       gearman_neb    => false,
       mod_gearman    => true,

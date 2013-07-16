@@ -1,0 +1,7 @@
+printfcmd="/usr/bin/printf"
+commandfile="$OMD_ROOT/tmp/run/<%= core %>.cmd"
+datetime=`date +%s`
+
+$printfcmd "[%i] STOP_EXECUTING_SVC_CHECKS\n" $datetime >> $commandfile
+$printfcmd "[%i] DISABLE_NOTIFICATIONS;%i\n" $datetime $datetime >> $commandfile
+
