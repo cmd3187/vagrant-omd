@@ -1,12 +1,13 @@
 define omd::poller( $master = "localhost:4730",
       $hostgroups = []) {
    require omd
-
+   $checks = ["\"omd_status\", \"${title}\", None",
+      '"cpu.loads", None, (1, 2)',
+   ]
    omd::site{ $title :
       apache         => 'none',
       core           => 'none',
-      master         => $master,
-      masters        => [],
+      masters        => [$master],
       gearman_worker => true,
       gearman_neb    => false,
       mod_gearman    => true,
@@ -20,5 +21,6 @@ define omd::poller( $master = "localhost:4730",
       hostgroups => $hostgroups,
       tags       => ['watch', 'poller'],
       address    => $ipaddress_eth1,
+      checks     => $checks,
    }
 }

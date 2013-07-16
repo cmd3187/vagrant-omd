@@ -1,7 +1,16 @@
+# Omd::Watch - Host Watcher class
+# Use this class for any server/service that you would like to monitor.
+# Parameters:
+#  site_name: OPTIONAL - Name of the OMD environment to embed the nagios checks in. DEFAULT - test
+#  hostgroups: OPTIONAL - List of hostgroups to add a particular system to. This is an array. DEFAULT - []
+#  tags: OPTIONAL - List of optional tags to simplify host collection/aggregation for each host. DEFAULT - ['watch', 'check_mk']
+#  checks: OPTIONAL - List of manual check to be run for the specified host through check_mk. This should consist of an array 
+#     of tuple with the command, warning thresholds and error thresholds. Each tuple can be represented as a CSV line. DEFAULT - []
 class omd::watch($site_name='test',
     $hostgroups = [],
     $address = $ipaddress,
-    $tags = ['watch', 'check_mk']) {
+    $tags = ['watch', 'check_mk'],
+    $checks = undef) {
 
    class { "check_mk": }
   

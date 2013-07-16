@@ -3,7 +3,7 @@
 # all_hosts = [ ]
 <%-if @gearmand or @gearman_worker %>check_submission = "gearman"<%end %>
 generate_hostconf = False
-<%-if @gearmand %>gearman_server = [ "<%=master %>" ]
+<%-if @gearmand %>gearman_server = [ "<%=masters[0] %>" ]
 <%-elsif @gearman_worker -%>
 gearman_server = [ <% masters.each do |master| -%>"<%=master %>"<%end -%> ]
 <%- end -%>

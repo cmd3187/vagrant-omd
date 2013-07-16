@@ -1,1 +1,4 @@
 all_hosts += [ "<%=fqdn -%>" ]
+<% if @checks -%>
+checks += [ <% @checks.each do |check| -%>("<%=fqdn -%>", <%=check -%>),<% end -%>]
+<% end %>

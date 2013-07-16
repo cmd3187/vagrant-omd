@@ -1,9 +1,8 @@
-# Class: omd::site
+# Class: Omd::Site
 # Description: Class to provision new sites and manage their configurations
 # apache: { own | none }
 # core: { nagios | icinga | none }
 # gearmand: { true | false }
-# master: "localhost:4730"
 # gearmand_neb: { true | false }
 # gearman_worker: { true | false }
 # mod_gearman: { true | false }
@@ -13,13 +12,12 @@ define omd::site($site = $title,
    $apache = 'own',
    $core = 'nagios',
    $gearmand = false,
-   $master = "localhost:4730",
    $gearman_neb = false,
    $gearman_worker = false,
    $mod_gearman = false,
    $pnp4nag = "on",
    $hostgroups = [],
-   $masters = [],
+   $masters = ["localhost:4730"],
    $password = 'should_be_changed',
    $version = "1.00") {
 
