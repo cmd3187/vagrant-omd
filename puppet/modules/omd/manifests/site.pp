@@ -280,5 +280,12 @@ define omd::site($site = $title,
       environment => $env_vars,
       refreshonly => true,
    }
-      
+
+   file { "check_omd_core_status.sh":
+      path    => "/opt/omd/sites/${site}/lib/nagios/plugins/check_omd_core_status.sh",
+      content => template("omd/check_omd_core_status.sh"),
+      owner   => $site,
+      group   => $site,
+      mode    => 0755,
+   }      
 }

@@ -44,4 +44,26 @@ define omd::collector( $masters = ["${ipaddress_eth1}:4730"],
       target => "/opt/omd/sites/${title}/etc/nagios/conf.d/hostgroups/linux.cfg",
    }
 
+   # Special check to make sure that the core will work ok!
+   #nagios_command { "check_omd_core_status":
+   #   ensure       => present,
+   #   target       => "/opt/omd/sites/${title}/etc/nagios/conf.d/check_omd.cfg",
+   #   command_line => "check_omd_core_status.sh",
+   #   notify       => Service["omd"],
+   #}
+
+   #nagios_service { "Nagios Status":
+   #   ensure                => present,
+   #   notes                 => "Check to see if the notification and checks are active for this server",
+   #   service_description   => "Check to see if the notification and checks are active for this server",
+   #   target                => "/opt/omd/sites/${title}/etc/nagios/conf.d/check_omd.cfg",
+   #   check_command         => "check_omd_core_status",
+   #   host_name             => $fqdn,
+   #   max_check_attempts    => 3,
+   #   check_interval        => 60,
+   #   retry_interval        => 45,
+   #   notification_interval => 60,
+   #   notify                => Service["omd"],
+   #}
+
 }

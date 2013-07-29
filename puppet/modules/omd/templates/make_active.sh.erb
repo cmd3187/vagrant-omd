@@ -1,7 +1,9 @@
 printfcmd="/usr/bin/printf"
 commandfile="$OMD_ROOT/tmp/run/<%=core %>.cmd"
+statefile="$OMD_ROOT/tmp/run/<%=core %>_state.run"
 datetime=`date +%s`
 
 $printfcmd "[%i] START_EXECUTING_SVC_CHECKS\n" $datetime >> $commandfile
+$printfcmd "[%i] START_EXECUTING_HOST_CHECKS\n" $datetime >> $commandfile
 $printfcmd "[%i] ENABLE_NOTIFICATIONS;%i\n" $datetime $datetime >> $commandfile
-
+$printfcmd "ACTIVE" >> $statefile
